@@ -4,13 +4,7 @@ import styled, { css } from 'react-emotion'
 const WeaponInfo = props => {
   const { weapon } = props
   const { elements, attributes } = weapon
-  const sharpnessWrapper = css`
-    background: #666666;
-    display: flex;
-    height: 10px;
-    min-width: 100px;
-    border: 1px solid #cccccc;
-  `
+  const hasElement = elements.length > 0
   const sharpnessColors = {
     red: '#d92c2c',
     orange: '#d9662c',
@@ -19,14 +13,18 @@ const WeaponInfo = props => {
     blue: '#2c86d9',
     white: '#ffffff'
   }
-  const sharpnessStyles = props => css`
+  const sharpnessWrapper = css`
+    background: #666666;
+    display: flex;
     height: 10px;
-    width: ${props.width};
-    background: ${props.color};
+    min-width: 100px;
+    border: 1px solid #cccccc;
   `
-  const SharpnessSpan = styled('span')`
-    ${sharpnessStyles};
-  `
+  const SharpnessSpan = styled('span')(props => ({
+    height: 10,
+    width: props.width,
+    background: props.color
+  }))
   const Sharpness = () => {
     let result = []
     for (let color in sharpnessColors) {
@@ -38,10 +36,8 @@ const WeaponInfo = props => {
         />
       )
     }
-    return result
+    return <div className={sharpnessWrapper}>{result.map(item => item)}</div>
   }
-
-  const hasElement = elements.length > 0
   const isCraftable = weapon.crafting.craftable ? (
     <li>Craftable</li>
   ) : (
@@ -72,10 +68,7 @@ const WeaponInfo = props => {
         <li>Rarity: {weapon.rarity}</li>
         {weapon.durability && (
           <li>
-            Sharpness:{' '}
-            <div className={sharpnessWrapper}>
-              {Sharpness().map(item => item)}
-            </div>
+            Sharpness: <Sharpness />
           </li>
         )}
 
