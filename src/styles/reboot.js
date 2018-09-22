@@ -1,4 +1,5 @@
 import { injectGlobal } from 'emotion'
+import BodyBackground from '../img/bg_page.jpg'
 
 injectGlobal`
 /*!
@@ -329,5 +330,17 @@ template {
 
 [hidden] {
   display: none !important;
+}
+body {
+    background: url(${BodyBackground}) center top no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    width: 100%;
+    box-sizing: border-box;
+    height: inherit;
+    color: #fff;
+    font-size: 16px;
+    overflow: hidden;
+    position: relative;
 }
 `

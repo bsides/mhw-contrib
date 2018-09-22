@@ -1,22 +1,24 @@
 import React, { Component, Fragment } from 'react'
-import WeaponInfo from './WeaponInfo'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import WeaponInfo from './Weapon/WeaponInfo'
 import { getWeapons } from './middleware/requests'
+import { Wrapper, styleWeaponInfo } from './styles/general'
 
 const WEAPON_TYPES = [
-  { title: 'Great Sword', id: 'great-sword' },
-  { title: 'Long Sword', id: 'long-sword' },
-  { title: 'Sword and Shield', id: 'sword-and-shield' },
-  { title: 'Dual Blades', id: 'dual-blades' },
-  { title: 'Hammer', id: 'hammer' },
-  { title: 'Hunting Horn', id: 'hunting-horn' },
-  { title: 'Lance', id: 'lance' },
-  { title: 'Gunlance', id: 'gunlance' },
-  { title: 'Switch Axe', id: 'switch-axe' },
-  { title: 'Charge Blade', id: 'charge-blade' },
-  { title: 'Insect Glaive', id: 'insect-glaive' },
-  { title: 'Light Bowgun', id: 'light-bowgun' },
-  { title: 'Heavy Bowgun', id: 'heavy-bowgun' },
-  { title: 'Bow', id: 'bow' }
+  { title: 'Great Sword', type: 'great-sword' },
+  { title: 'Long Sword', type: 'long-sword' },
+  { title: 'Sword and Shield', type: 'sword-and-shield' },
+  { title: 'Dual Blades', type: 'dual-blades' },
+  { title: 'Hammer', type: 'hammer' },
+  { title: 'Hunting Horn', type: 'hunting-horn' },
+  { title: 'Lance', type: 'lance' },
+  { title: 'Gunlance', type: 'gunlance' },
+  { title: 'Switch Axe', type: 'switch-axe' },
+  { title: 'Charge Blade', type: 'charge-blade' },
+  { title: 'Insect Glaive', type: 'insect-glaive' },
+  { title: 'Light Bowgun', type: 'light-bowgun' },
+  { title: 'Heavy Bowgun', type: 'heavy-bowgun' },
+  { title: 'Bow', type: 'bow' }
 ]
 
 class App extends Component {
@@ -30,32 +32,66 @@ class App extends Component {
   async componentDidMount() {
     const weapons = await getWeapons()
     this.setState({ weapons })
+
+    const { type, id } = this.props.match.params
+    if (type) {
+      this.showWeaponsByType(type)
+      this.setState({
+        isWeaponTypeSelected: type ? true : false
+      })
+    }
+    if (id) {
+      this.showWeaponsById(parseInt(id, 10))
+    }
+    console.log('mounted')
+  }
+  componentDidUpdate(prevProps) {
+    const { type, id } = this.props.match.params
+    const { type: oldType, id: oldId } = prevProps.match.params
+    if (type !== oldType) {
+      this.showWeaponsByType(type)
+      this.setState({
+        isWeaponTypeSelected: type ? true : false
+      })
+    }
+    if (id !== oldId) {
+      this.showWeaponsById(parseInt(id, 10))
+    }
   }
 
   handleWTSelected = evt => {
     const weaponType = evt.target.value
     this.showWeaponsByType(weaponType)
     this.setState({
-      isWeaponTypeSelected: evt.target.value === '0' ? true : false
+      isWeaponTypeSelected: weaponType ? true : false
     })
-  }
-
-  showWeaponsByType(weaponId) {
-    const { weapons } = this.state
-    const weaponsByType = weapons.filter(
-      item => (item.type === weaponId ? item : false)
-    )
-    this.setState({ weaponsByType })
+    // Change path
+    this.props.history.push(`/weapons/${weaponType}`)
   }
 
   handleWeaponSelected = evt => {
     const weaponId = parseInt(evt.target.value, 10) // item.id is int!
     const { weapons } = this.state
-    const filteredWeapon = weapons.filter(item => {
-      if (item.id === weaponId) return item
-      return false
-    })
-    console.log(filteredWeapon)
+    this.showWeaponsById(weaponId)
+    // Change path
+    this.props.history.push(
+      `/weapons/${this.props.match.params.type}/${weaponId}`
+    )
+  }
+
+  showWeaponsByType(weaponType) {
+    const { weapons } = this.state
+    const weaponsByType = weapons.filter(
+      item => (item.type === weaponType ? item : false)
+    )
+    this.setState({ weaponsByType })
+  }
+
+  showWeaponsById(weaponId) {
+    const { weapons } = this.state
+    const filteredWeapon = weapons.filter(
+      item => (item.id === weaponId ? item : false)
+    )
     this.setState({ weaponSelected: filteredWeapon })
   }
 
@@ -65,45 +101,50 @@ class App extends Component {
 
   render() {
     const { weaponsByType, weaponSelected } = this.state
-    const weaponTypeOptions = WEAPON_TYPES.map(weapon => (
-      <option key={weapon.id} value={weapon.id}>
-        {weapon.title}
-      </option>
-    ))
-    const weaponOptions = weaponsByType.map(weapon => (
-      <option key={weapon.id} value={weapon.id}>
-        {weapon.name}
-      </option>
-    ))
-    const weaponInfo = weaponSelected.map(weapon => (
-      <WeaponInfo
-        weapon={weapon}
-        key={weapon.id}
-        handleInput={this.handleInput}
-      />
-    ))
+    const { type, id } = this.props.match.params
+
+    const ListWeaponsTypes = () => (
+      <select onChange={this.handleWTSelected} defaultValue={type}>
+        <option>Select a Weapon Type</option>
+        {WEAPON_TYPES.map(weapon => (
+          <option key={weapon.type} value={weapon.type}>
+            {weapon.title}
+          </option>
+        ))}
+      </select>
+    )
+    const ListWeapons = () => (
+      <select onChange={this.handleWeaponSelected} defaultValue={id}>
+        <option>Select a Weapon</option>
+        {weaponsByType.map(weapon => (
+          <option key={weapon.id} value={weapon.id}>
+            {weapon.name}
+          </option>
+        ))}
+      </select>
+    )
+    const WeaponInfoWrapper = () => {
+      return weaponSelected.length > 0 ? (
+        <div className={styleWeaponInfo}>
+          {weaponSelected.map(weapon => (
+            <WeaponInfo
+              weapon={weapon}
+              key={weapon.id}
+              handleInput={this.handleInput}
+            />
+          ))}
+        </div>
+      ) : null
+    }
+
     return (
-      <Fragment>
-        <select onChange={this.handleWTSelected}>
-          <option>Select a Weapon Type</option>
-          {weaponTypeOptions}
-        </select>
-        {weaponOptions.length ? (
-          <select onChange={this.handleWeaponSelected}>
-            <option>Select a Weapon</option>
-            {weaponOptions}
-          </select>
-        ) : (
-          <span />
-        )}
-        {weaponInfo.length ? (
-          <div>{weaponInfo}</div>
-        ) : (
-          weaponOptions.length > 0 && (
-            <div>Select a weapon to load its info</div>
-          )
-        )}
-      </Fragment>
+      <Wrapper>
+        <div>
+          <ListWeaponsTypes />
+          <ListWeapons />
+          <WeaponInfoWrapper />
+        </div>
+      </Wrapper>
     )
   }
 }
