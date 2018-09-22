@@ -1,22 +1,33 @@
 import React, { Component, Fragment } from 'react'
 import styled, { css } from 'react-emotion'
+import startCase from 'lodash/startCase'
+import join from 'lodash/join'
 import Handicraft from './Handicraft'
 import Sharpness from './Sharpness'
 import imgIcons from '../img/icons.png'
+import imgIcons2 from '../img/icons2.png'
+import imgIcons3 from '../img/icons3.png'
 
 const wrapper = css`
-  display: flex;
-  flex-flow: column;
   list-style-type: none;
   padding: 1.3em;
   margin: 0;
+  line-height: 2;
+  font-size: 1.1em;
 
   & li {
-    flex: 1;
+    display: flex;
+    align-items: center;
     border-bottom: 1px dashed #333;
 
     &:first-child {
       display: flex;
+    }
+    > span {
+      flex: 1;
+      + span {
+        flex: 0 1 auto;
+      }
     }
   }
 `
@@ -34,7 +45,27 @@ const bgIcon = css`
     height: 40px;
   }
 `
-
+const IconAttack = styled('span')`
+  background: url(${imgIcons3}) no-repeat -1.4em -3.85em;
+  background-size: 10em;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+`
+const IconElement = styled('span')`
+  background: url(${imgIcons2}) no-repeat -11.5em -9em;
+  background-size: 20.2em;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+`
+const IconSharpness = styled('span')`
+  background: url(${imgIcons2}) no-repeat -11.5em -9em;
+  background-size: 20.2em;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+`
 class WeaponInfo extends Component {
   state = { handicraft: 0 }
   handleHandicraft = evt => {
@@ -49,6 +80,53 @@ class WeaponInfo extends Component {
     ) : (
       <li>Upgradeable</li>
     )
+    const Attributes = () => {
+      let result = []
+      for (let attr in attributes) {
+        switch (attr) {
+          case 'ammoCapacities':
+            let ammoResult = []
+            for (let ammo in attributes[attr]) {
+              console.log(ammo)
+              console.log(attributes[attr])
+              console.log(attributes[attr][ammo])
+              ammoResult.push(
+                <span key={ammo}>
+                  {startCase(ammo)} ({join(attributes[attr][ammo], ', ')})
+                </span>
+              )
+            }
+            result.push(
+              <li key={attr}>
+                <span>{startCase(attr)}</span>
+                <span>{ammoResult.map(ammo => ammo)}</span>
+              </li>
+            )
+            break
+          case 'coatings':
+            result.push(
+              <li key={attr}>
+                <span>{startCase(attr)}</span>
+                <span>
+                  {attributes[attr]
+                    .map(coating => startCase(coating))
+                    .join(', ')}
+                </span>
+              </li>
+            )
+            break
+          default:
+            result.push(
+              <li key={attr}>
+                <span>{startCase(attr)}</span>
+                <span>{startCase(attributes[attr])}</span>
+              </li>
+            )
+            break
+        }
+      }
+      return result.map(item => item)
+    }
 
     return (
       <Fragment>
@@ -69,81 +147,77 @@ class WeaponInfo extends Component {
               alt={`Representation of ${weapon.name}`}
             />
           </li>
-          <li>ID: {weapon.id}</li>
-          <li>Rarity: {weapon.rarity}</li>
+          <li>
+            <span>ID:</span>
+            <span>{weapon.id}</span>
+          </li>
+          <li>
+            <span>Rarity:</span>
+            <span>{weapon.rarity}</span>
+          </li>
           {weapon.durability && (
             <li>
-              <div>
+              <span>
+                <IconSharpness />
+                Sharpness:{' '}
+              </span>
+              <span>
+                <Sharpness
+                  durability={weapon.durability}
+                  handicraft={this.state.handicraft}
+                />
                 Handicraft:{' '}
                 <Handicraft
                   onChange={this.handleHandicraft}
                   durability={weapon.durability.length}
                 />
-              </div>
-              Sharpness:{' '}
-              <Sharpness
-                durability={weapon.durability}
-                handicraft={this.state.handicraft}
-              />
+              </span>
             </li>
           )}
 
           <li>
-            <div>Attack Bloat: {weapon.attack.display}</div>
-            <div>Attack Raw: {weapon.attack.raw}</div>
+            <span>
+              <IconAttack />
+              Attack Displayed:{' '}
+            </span>
+            <span>{weapon.attack.display}</span>
+          </li>
+          <li>
+            <span>
+              <IconAttack />
+              Attack Raw:
+            </span>
+            <span>{weapon.attack.raw}</span>
+          </li>
+          <li>
             {elements.length > 0 &&
               elements.map(element => {
                 return (
-                  <div key={element.damage}>
-                    Element: {element.damage} {element.type}{' '}
-                    {element.hidden ? `(Hidden)` : ``}
-                  </div>
+                  <Fragment key={element.damage}>
+                    <span>
+                      <IconElement />
+                      Element:{' '}
+                    </span>
+                    <span>
+                      {element.damage} {element.type}
+                      {element.hidden ? `(Hidden)` : ``}
+                    </span>
+                  </Fragment>
                 )
               })}
           </li>
           {weapon.slots.length > 0 && (
             <li>
-              Slots: {weapon.slots.length}{' '}
-              {weapon.slots.map(slot => `(Rank ${slot.rank}) `)}
+              <span>Slots:</span>
+              <span>
+                {weapon.slots.length}{' '}
+                {weapon.slots.map(slot => `(Rank ${slot.rank}) `)}
+              </span>
             </li>
           )}
-          <li>
-            <div>Attributes:</div>
-            {attributes.ammoCapacities && (
-              <div>Ammo Capacities: {attributes.ammoCapacities}</div>
-            )}
-            {attributes.affinity && <div>Affinity: {attributes.affinity}</div>}
-            {attributes.boostType && (
-              <div>Boost Type: {attributes.boostType}</div>
-            )}
-            {attributes.coatings && (
-              <div>
-                Coatings: {attributes.coatings.map(coating => `${coating} | `)}
-              </div>
-            )}
-            {attributes.damageType && (
-              <div>Damage Type: {attributes.damageType}</div>
-            )}
-            {attributes.defense && <div>Defense: {attributes.defense}</div>}
-            {attributes.deviation && (
-              <div>Deviation: {attributes.deviation}</div>
-            )}
-            {attributes.elderseal && (
-              <div>Elderseal: {attributes.elderseal}</div>
-            )}
-            {attributes.phialType && (
-              <div>Phial Type: {attributes.phialType}</div>
-            )}
-            {attributes.shellingType && (
-              <div>Shelling Type: {attributes.shellingType}</div>
-            )}
-            {attributes.specialAmmo && (
-              <div>Special Ammo: {attributes.specialAmmo}</div>
-            )}
-          </li>
+          <Attributes />
           {isCraftable}
         </ul>
-        <hr />
       </Fragment>
     )
   }

@@ -17,6 +17,7 @@ const styleWeaponInfo = css`
   /* background: url(${Background}); */
   box-shadow: 0 0 20px #000;
   background-color: rgba(0, 0, 0, 0.6);
+  max-width: 500px;
 `
 
 export { Wrapper, styleWeaponInfo }

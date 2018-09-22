@@ -21,19 +21,25 @@ const sharpnessEnd = css`
   width: 14px;
   height: 22px;
 `
-const sharpnessWrapper = css`
+const sharpnessData = css`
   background: #454545
     linear-gradient(to bottom, #000000 0%, #343434 60%, #343434 100%);
   display: flex;
   height: 16px;
-  min-width: 100px;
+  min-width: 150px;
   border: 0;
   border-top: 2px solid #949494;
   border-bottom: 2px solid #737373;
   margin-top: 5px;
   padding: 1px;
 `
-const SharpnessData = styled('span')(props => ({
+const SharpnessWrapper = styled('div')`
+  display: inline-block;
+  > div {
+    display: flex;
+  }
+`
+const SharpnessDataItem = styled('span')(props => ({
   height: 10,
   width: props.width,
   background: `${props.color} linear-gradient(to top, ${darken(
@@ -46,7 +52,7 @@ const Sharpness = props => {
   let result = []
   for (let color in sharpnessColors) {
     result.push(
-      <SharpnessData
+      <SharpnessDataItem
         key={sharpnessColors[color]}
         color={sharpnessColors[color]}
         width={`${Math.floor(
@@ -56,11 +62,13 @@ const Sharpness = props => {
     )
   }
   return (
-    <div style={{ display: 'flex' }}>
-      <div className={sharpnessBegin} />
-      <div className={sharpnessWrapper}>{result.map(item => item)}</div>
-      <div className={sharpnessEnd} />
-    </div>
+    <SharpnessWrapper>
+      <div>
+        <div className={sharpnessBegin} />
+        <div className={sharpnessData}>{result.map(item => item)}</div>
+        <div className={sharpnessEnd} />
+      </div>
+    </SharpnessWrapper>
   )
 }
 
