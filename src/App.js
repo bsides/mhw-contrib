@@ -88,11 +88,21 @@ class App extends Component {
           <option>Select a Weapon Type</option>
           {weaponTypeOptions}
         </select>
-        <select onChange={this.handleWeaponSelected}>
-          <option>Select a Weapon</option>
-          {weaponOptions}
-        </select>
-        {weaponInfo}
+        {weaponOptions.length ? (
+          <select onChange={this.handleWeaponSelected}>
+            <option>Select a Weapon</option>
+            {weaponOptions}
+          </select>
+        ) : (
+          <span />
+        )}
+        {weaponInfo.length ? (
+          <div>{weaponInfo}</div>
+        ) : (
+          weaponOptions.length > 0 && (
+            <div>Select a weapon to load its info</div>
+          )
+        )}
       </Fragment>
     )
   }
