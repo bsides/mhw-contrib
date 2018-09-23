@@ -338,8 +338,10 @@ body {
     width: 100%;
     box-sizing: border-box;
     height: inherit;
-    color: #fff;
+    color: #aaa;
     font-size: 16px;
     position: relative;
 }
+a { color: #fff; }
+a:hover { color: #cfee1d; }
 `

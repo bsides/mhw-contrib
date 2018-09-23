@@ -1,24 +1,24 @@
 import React, { Component, Fragment } from 'react'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
-import WeaponInfo from './Weapon/WeaponInfo'
 import { getWeapons } from './middleware/requests'
+import WeaponInfo from './Weapon/WeaponInfo'
 import { Wrapper, styleWeaponInfo } from './styles/general'
+import Dropdown from './Dropdown'
 
 const WEAPON_TYPES = [
-  { title: 'Great Sword', type: 'great-sword' },
-  { title: 'Long Sword', type: 'long-sword' },
-  { title: 'Sword and Shield', type: 'sword-and-shield' },
-  { title: 'Dual Blades', type: 'dual-blades' },
-  { title: 'Hammer', type: 'hammer' },
-  { title: 'Hunting Horn', type: 'hunting-horn' },
-  { title: 'Lance', type: 'lance' },
-  { title: 'Gunlance', type: 'gunlance' },
-  { title: 'Switch Axe', type: 'switch-axe' },
-  { title: 'Charge Blade', type: 'charge-blade' },
-  { title: 'Insect Glaive', type: 'insect-glaive' },
-  { title: 'Light Bowgun', type: 'light-bowgun' },
-  { title: 'Heavy Bowgun', type: 'heavy-bowgun' },
-  { title: 'Bow', type: 'bow' }
+  { name: 'Great Sword', id: 'great-sword' },
+  { name: 'Long Sword', id: 'long-sword' },
+  { name: 'Sword and Shield', id: 'sword-and-shield' },
+  { name: 'Dual Blades', id: 'dual-blades' },
+  { name: 'Hammer', id: 'hammer' },
+  { name: 'Hunting Horn', id: 'hunting-horn' },
+  { name: 'Lance', id: 'lance' },
+  { name: 'Gunlance', id: 'gunlance' },
+  { name: 'Switch Axe', id: 'switch-axe' },
+  { name: 'Charge Blade', id: 'charge-blade' },
+  { name: 'Insect Glaive', id: 'insect-glaive' },
+  { name: 'Light Bowgun', id: 'light-bowgun' },
+  { name: 'Heavy Bowgun', id: 'heavy-bowgun' },
+  { name: 'Bow', id: 'bow' }
 ]
 
 class App extends Component {
@@ -103,20 +103,10 @@ class App extends Component {
     const { weaponsByType, weaponSelected } = this.state
     const { type, id } = this.props.match.params
 
-    const ListWeaponsTypes = () => (
-      <select onChange={this.handleWTSelected} defaultValue={type}>
-        <option>Select a Weapon Type</option>
-        {WEAPON_TYPES.map(weapon => (
-          <option key={weapon.type} value={weapon.type}>
-            {weapon.title}
-          </option>
-        ))}
-      </select>
-    )
-    const ListWeapons = () => (
-      <select onChange={this.handleWeaponSelected} defaultValue={id}>
+    const Select = ({ list, value, onChange }) => (
+      <select onChange={onChange} defaultValue={value}>
         <option>Select a Weapon</option>
-        {weaponsByType.map(weapon => (
+        {list.map(weapon => (
           <option key={weapon.id} value={weapon.id}>
             {weapon.name}
           </option>
@@ -136,12 +126,31 @@ class App extends Component {
         </div>
       ) : null
     }
-
+    console.log(this.props.match)
     return (
       <Wrapper>
         <div>
-          <ListWeaponsTypes />
-          <ListWeapons />
+          <Dropdown
+            title="Select a Weapon Type"
+            list={WEAPON_TYPES}
+            selected={type}
+          />
+          <Dropdown
+            title="Select a Weapon"
+            list={weaponsByType}
+            selected={id}
+            type={type}
+          />
+          <Select
+            list={WEAPON_TYPES}
+            value={type}
+            onChange={this.handleWTSelected}
+          />
+          <Select
+            list={weaponsByType}
+            value={id}
+            onChange={this.handleWeaponSelected}
+          />
           <WeaponInfoWrapper />
         </div>
       </Wrapper>
