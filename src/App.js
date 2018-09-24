@@ -43,7 +43,6 @@ class App extends Component {
     if (id) {
       this.showWeaponsById(parseInt(id, 10))
     }
-    console.log('mounted')
   }
   componentDidUpdate(prevProps) {
     const { type, id } = this.props.match.params
@@ -126,11 +125,10 @@ class App extends Component {
         </div>
       ) : null
     }
-    console.log(this.props.match)
     return (
       <Wrapper>
         <div>
-          <Dropdown
+          {/* <Dropdown
             title="Select a Weapon Type"
             list={WEAPON_TYPES}
             selected={type}
@@ -140,7 +138,7 @@ class App extends Component {
             list={weaponsByType}
             selected={id}
             type={type}
-          />
+          /> */}
           <Select
             list={WEAPON_TYPES}
             value={type}

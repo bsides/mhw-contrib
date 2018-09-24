@@ -7,17 +7,14 @@ const Wrapper = styled('div')(
     display: flex;
     align-items: center;
     justify-content: center;
-
-    > div {
-      width: 80%;
-    }
   `
 )
 const styleWeaponInfo = css`
   /* background: url(${Background}); */
   box-shadow: 0 0 20px #000;
   background-color: rgba(0, 0, 0, 0.6);
-  max-width: 500px;
+  /* max-width: 500px; */
+  display: flex;
 `
 
 export { Wrapper, styleWeaponInfo }

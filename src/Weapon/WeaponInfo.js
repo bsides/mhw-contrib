@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from 'react'
 import styled, { css } from 'react-emotion'
 import startCase from 'lodash/startCase'
-import join from 'lodash/join'
 import Handicraft from './Handicraft'
 import Sharpness from './Sharpness'
+import Attributes from './Attributes'
 import imgIcons from '../img/icons.png'
 import imgIcons2 from '../img/icons2.png'
 import imgIcons3 from '../img/icons3.png'
@@ -15,7 +15,7 @@ const wrapper = css`
   line-height: 2;
   font-size: 1.1em;
 
-  & li {
+  li {
     display: flex;
     align-items: center;
     border-bottom: 1px dashed #333;
@@ -44,6 +44,10 @@ const bgIcon = css`
     width: 40px;
     height: 40px;
   }
+`
+const styleImage = css`
+  align-self: center;
+  justify-self: center;
 `
 const IconAttack = styled('span')`
   background: url(${imgIcons3}) no-repeat -1.4em -3.85em;
@@ -80,53 +84,6 @@ class WeaponInfo extends Component {
     ) : (
       <li>Upgradeable</li>
     )
-    const Attributes = () => {
-      let result = []
-      for (let attr in attributes) {
-        switch (attr) {
-          case 'ammoCapacities':
-            let ammoResult = []
-            for (let ammo in attributes[attr]) {
-              console.log(ammo)
-              console.log(attributes[attr])
-              console.log(attributes[attr][ammo])
-              ammoResult.push(
-                <span key={ammo}>
-                  {startCase(ammo)} ({join(attributes[attr][ammo], ', ')})
-                </span>
-              )
-            }
-            result.push(
-              <li key={attr}>
-                <span>{startCase(attr)}</span>
-                <span>{ammoResult.map(ammo => ammo)}</span>
-              </li>
-            )
-            break
-          case 'coatings':
-            result.push(
-              <li key={attr}>
-                <span>{startCase(attr)}</span>
-                <span>
-                  {attributes[attr]
-                    .map(coating => startCase(coating))
-                    .join(', ')}
-                </span>
-              </li>
-            )
-            break
-          default:
-            result.push(
-              <li key={attr}>
-                <span>{startCase(attr)}</span>
-                <span>{startCase(attributes[attr])}</span>
-              </li>
-            )
-            break
-        }
-      }
-      return result.map(item => item)
-    }
 
     return (
       <Fragment>
@@ -140,33 +97,31 @@ class WeaponInfo extends Component {
             </div>
             <h1>{weapon.name}</h1>
           </li>
-          <li>
-            Image:{' '}
+          <li className={styleImage}>
             <img
               src={weapon.assets.image}
               alt={`Representation of ${weapon.name}`}
             />
           </li>
           <li>
-            <span>ID:</span>
+            <span>ID</span>
             <span>{weapon.id}</span>
           </li>
           <li>
-            <span>Rarity:</span>
+            <span>Rarity</span>
             <span>{weapon.rarity}</span>
           </li>
           {weapon.durability && (
             <li>
               <span>
                 <IconSharpness />
-                Sharpness:{' '}
+                Sharpness{' '}
               </span>
               <span>
                 <Sharpness
                   durability={weapon.durability}
                   handicraft={this.state.handicraft}
                 />
-                Handicraft:{' '}
                 <Handicraft
                   onChange={this.handleHandicraft}
                   durability={weapon.durability.length}
@@ -178,14 +133,14 @@ class WeaponInfo extends Component {
           <li>
             <span>
               <IconAttack />
-              Attack Displayed:{' '}
+              Attack Displayed{' '}
             </span>
             <span>{weapon.attack.display}</span>
           </li>
           <li>
             <span>
               <IconAttack />
-              Attack Raw:
+              Attack Raw
             </span>
             <span>{weapon.attack.raw}</span>
           </li>
@@ -196,7 +151,7 @@ class WeaponInfo extends Component {
                   <Fragment key={element.damage}>
                     <span>
                       <IconElement />
-                      Element:{' '}
+                      Element{' '}
                     </span>
                     <span>
                       {element.damage} {element.type}
@@ -215,8 +170,43 @@ class WeaponInfo extends Component {
               </span>
             </li>
           )}
-          <Attributes />
-          {isCraftable}
+          <Attributes attributes={attributes} />
+        </ul>
+        {isCraftable}
+        <ul className={wrapper}>
+          {weapon.crafting.upgradeMaterials.length > 0 &&
+            weapon.crafting.upgradeMaterials.map(material => {
+              let result = []
+              const { item } = material
+              for (let i in item) {
+                switch (i) {
+                  case 'description':
+                    result.push(
+                      <li key={i}>
+                        <span />
+                        <span>{startCase(item[i])}</span>
+                      </li>
+                    )
+                    break
+                  default:
+                    result.push(
+                      <li key={i}>
+                        <span>{startCase(i)}</span>
+                        <span>{startCase(item[i])}</span>
+                      </li>
+                    )
+                }
+              }
+              return (
+                <Fragment>
+                  {result}
+                  <li>
+                    <span />
+                    <span>X {material.quantity}</span>
+                  </li>
+                </Fragment>
+              )
+            })}
         </ul>
       </Fragment>
     )
