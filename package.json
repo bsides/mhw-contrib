@@ -5,7 +5,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "emotion": "^9.2.9",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "polished": "^2.1.1",
     "react": "^16.5.1",
     "react-dom": "^16.5.1",
